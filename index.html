@@ -14,9 +14,8 @@
             width: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f6;
-            overflow: hidden;
+            overflow-x: hidden;
         }
-        /* ส่วนแสดงปุ่มกรณีโหลดไม่ได้ */
         #login-overlay {
             position: fixed;
             top: 0;
@@ -27,13 +26,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             z-index: 10;
+            overflow-y: auto;
+            padding-bottom: 50px;
         }
         .container {
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             padding: 20px;
+            width: 90%;
         }
         .btn-open {
             background-color: #4285f4;
@@ -46,33 +48,42 @@
             text-decoration: none;
             display: inline-block;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.3s;
             margin-bottom: 15px;
-        }
-        .btn-open:hover {
-            background-color: #357ae8;
+            width: 100%;
+            box-sizing: border-box;
         }
         .btn-refresh {
             background-color: #34a853;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            font-size: 16px;
         }
         .msg {
             margin-bottom: 20px;
             color: #5f6368;
         }
-        .warning-box {
-            background-color: #fff3cd;
-            color: #856404;
+        .instruction-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 5px;
-            font-size: 14px;
             margin-top: 20px;
             text-align: left;
-            border: 1px solid #ffeeba;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .instruction-card h3 {
+            margin-top: 0;
+            color: #d93025;
+            font-size: 16px;
+        }
+        .step {
+            margin-bottom: 10px;
+            line-height: 1.5;
         }
         iframe {
             width: 100%;
@@ -87,8 +98,8 @@
     <div id="login-overlay">
         <div class="container">
             <div class="msg">
-                <h2>ยินดีต้อนรับสู่ POS Chaisiri</h2>
-                <p>ระบบตรวจพบว่าคุณยังไม่ได้ลงชื่อเข้าใช้ หรือเบราว์เซอร์บล็อกการเชื่อมต่อ</p>
+                <h2 style="color: #202124;">POS Chaisiri</h2>
+                <p>หากหน้าจอไม่โหลดหรือติดหน้า Login<br>กรุณาทำตามขั้นตอนด้านล่าง</p>
             </div>
             
             <a href="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
@@ -96,16 +107,32 @@
                 1. ลงชื่อเข้าใช้ (เปิดแท็บใหม่)
             </a>
 
-            <div class="msg">
-                <p>เมื่อลงชื่อเข้าใช้สำเร็จแล้ว ให้กลับมาที่หน้านี้แล้วกดปุ่มด้านล่าง:</p>
-                <button onclick="reloadIframe()" class="btn-refresh">
-                    2. ตรวจสอบสถานะและเข้าใช้งาน
-                </button>
-            </div>
+            <button onclick="reloadIframe()" class="btn-refresh">
+                2. ตรวจสอบสถานะและเข้าใช้งาน
+            </button>
 
-            <div class="warning-box">
-                <strong>คำแนะนำเพิ่มเติม:</strong><br>
-                หากกดปุ่มแล้วยังไม่ทำงาน ให้ตรวจสอบว่าเบราว์เซอร์ของคุณเปิดการใช้งาน <b>"คุกกี้จากบุคคลที่สาม" (Third-party cookies)</b> สำหรับไซต์นี้หรือไม่
+            <!-- คำแนะนำสำหรับมือถือ -->
+            <div class="instruction-card">
+                <h3>📱 วิธีตั้งค่าสำหรับมือถือ</h3>
+                
+                <div class="step">
+                    <strong>สำหรับ Android (Chrome):</strong><br>
+                    1. กดปุ่ม <b>จุด 3 จุด</b> มุมขวาบน<br>
+                    2. เลือก <b>การตั้งค่า</b> > <b>การตั้งค่าเว็บไซต์</b><br>
+                    3. เลือก <b>คุกกี้</b> และเลือก <b>"อนุญาตคุกกี้บุคคลที่สาม"</b>
+                </div>
+
+                <div class="step">
+                    <strong>สำหรับ iPhone (Safari):</strong><br>
+                    1. ไปที่ <b>การตั้งค่า (Settings)</b> ของเครื่อง iPhone<br>
+                    2. เลือก <b>Safari</b><br>
+                    3. ปิดเมนู <b>"ป้องกันการติดตามข้ามไซต์" (Prevent Cross-Site Tracking)</b><br>
+                    4. ปิดเมนู <b>"บล็อกคุกกี้ทั้งหมด" (Block All Cookies)</b>
+                </div>
+
+                <p style="color: #666; font-style: italic; font-size: 12px; margin-top: 15px;">
+                    *หมายเหตุ: หลังจากตั้งค่าแล้ว ให้ปิดเบราว์เซอร์แล้วเข้าใหม่อีกครั้ง
+                </p>
             </div>
         </div>
     </div>
@@ -121,18 +148,10 @@
         function reloadIframe() {
             const iframe = document.getElementById('appFrame');
             const overlay = document.getElementById('login-overlay');
-            
-            // รีโหลด iframe เพื่อดึง session ล่าสุด
             iframe.src = iframe.src; 
-            
             overlay.style.display = 'none';
             iframe.style.display = 'block';
         }
-
-        // กรณีต้องการให้หน้าเว็บจำสถานะการกด
-        window.onload = function() {
-            // คุณสามารถเพิ่ม Logic ตรวจสอบ Session ที่นี่ได้ในอนาคต
-        };
     </script>
 </body>
 </html>
