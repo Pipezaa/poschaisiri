@@ -12,24 +12,84 @@
             padding: 0;
             height: 100%;
             width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
             overflow: hidden;
+        }
+        /* ส่วนแสดงปุ่มกรณีโหลดไม่ได้ */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .btn-open {
+            background-color: #4285f4;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        .btn-open:hover {
+            background-color: #357ae8;
+        }
+        .msg {
+            margin-bottom: 20px;
+            color: #5f6368;
+            text-align: center;
+            padding: 0 20px;
         }
         iframe {
             width: 100%;
             height: 100vh;
             border: none;
+            display: none; /* ซ่อนไว้ก่อนจนกว่าจะโหลดสำเร็จ */
         }
     </style>
 </head>
 <body>
-    <!-- 
-      เพิ่ม allow="camera; microphone; display-capture;" 
-      เพื่อให้ iframe สามารถขอสิทธิ์ใช้งานกล้องจากเบราว์เซอร์ได้ 
-    -->
+
+    <div id="login-overlay">
+        <div class="msg">
+            <h2>ยินดีต้อนรับสู่ POS Chaisiri</h2>
+            <p>หากหน้าจอไม่โหลด หรือต้องการลงชื่อเข้าใช้ Gmail <br> กรุณากดปุ่มด้านล่างเพื่อเปิดระบบ</p>
+        </div>
+        <a href="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
+           target="_blank" class="btn-open">
+            เข้าใช้งานระบบ (เปิดแท็บใหม่)
+        </a>
+        <button onclick="showIframe()" style="margin-top: 20px; background: none; border: none; color: #4285f4; cursor: pointer; text-decoration: underline;">
+            ลองโหลดในหน้านี้อีกครั้ง
+        </button>
+    </div>
+
     <iframe 
+        id="appFrame"
         src="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
         allow="camera; microphone; display-capture; clipboard-read; clipboard-write;"
         allowfullscreen>
     </iframe>
+
+    <script>
+        function showIframe() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('appFrame').style.display = 'block';
+        }
+
+        // ตรวจสอบเบื้องต้น ถ้าผู้ใช้เคย Login แล้ว อาจจะโหลด iframe ได้เลย
+        // แต่ส่วนใหญ่ Google จะบล็อกหน้า Login ใน iframe เสมอ
+    </script>
 </body>
 </html>
