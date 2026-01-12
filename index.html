@@ -30,6 +30,11 @@
             justify-content: center;
             z-index: 10;
         }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+        }
         .btn-open {
             background-color: #4285f4;
             color: white;
@@ -39,40 +44,70 @@
             font-size: 18px;
             cursor: pointer;
             text-decoration: none;
+            display: inline-block;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: background 0.3s;
+            margin-bottom: 15px;
         }
         .btn-open:hover {
             background-color: #357ae8;
         }
+        .btn-refresh {
+            background-color: #34a853;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         .msg {
             margin-bottom: 20px;
             color: #5f6368;
-            text-align: center;
-            padding: 0 20px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: left;
+            border: 1px solid #ffeeba;
         }
         iframe {
             width: 100%;
             height: 100vh;
             border: none;
-            display: none; /* ซ่อนไว้ก่อนจนกว่าจะโหลดสำเร็จ */
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="msg">
-            <h2>ยินดีต้อนรับสู่ POS Chaisiri</h2>
-            <p>หากหน้าจอไม่โหลด หรือต้องการลงชื่อเข้าใช้ Gmail <br> กรุณากดปุ่มด้านล่างเพื่อเปิดระบบ</p>
+        <div class="container">
+            <div class="msg">
+                <h2>ยินดีต้อนรับสู่ POS Chaisiri</h2>
+                <p>ระบบตรวจพบว่าคุณยังไม่ได้ลงชื่อเข้าใช้ หรือเบราว์เซอร์บล็อกการเชื่อมต่อ</p>
+            </div>
+            
+            <a href="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
+               target="_blank" class="btn-open">
+                1. ลงชื่อเข้าใช้ (เปิดแท็บใหม่)
+            </a>
+
+            <div class="msg">
+                <p>เมื่อลงชื่อเข้าใช้สำเร็จแล้ว ให้กลับมาที่หน้านี้แล้วกดปุ่มด้านล่าง:</p>
+                <button onclick="reloadIframe()" class="btn-refresh">
+                    2. ตรวจสอบสถานะและเข้าใช้งาน
+                </button>
+            </div>
+
+            <div class="warning-box">
+                <strong>คำแนะนำเพิ่มเติม:</strong><br>
+                หากกดปุ่มแล้วยังไม่ทำงาน ให้ตรวจสอบว่าเบราว์เซอร์ของคุณเปิดการใช้งาน <b>"คุกกี้จากบุคคลที่สาม" (Third-party cookies)</b> สำหรับไซต์นี้หรือไม่
+            </div>
         </div>
-        <a href="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
-           target="_blank" class="btn-open">
-            เข้าใช้งานระบบ (เปิดแท็บใหม่)
-        </a>
-        <button onclick="showIframe()" style="margin-top: 20px; background: none; border: none; color: #4285f4; cursor: pointer; text-decoration: underline;">
-            ลองโหลดในหน้านี้อีกครั้ง
-        </button>
     </div>
 
     <iframe 
@@ -83,13 +118,21 @@
     </iframe>
 
     <script>
-        function showIframe() {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('appFrame').style.display = 'block';
+        function reloadIframe() {
+            const iframe = document.getElementById('appFrame');
+            const overlay = document.getElementById('login-overlay');
+            
+            // รีโหลด iframe เพื่อดึง session ล่าสุด
+            iframe.src = iframe.src; 
+            
+            overlay.style.display = 'none';
+            iframe.style.display = 'block';
         }
 
-        // ตรวจสอบเบื้องต้น ถ้าผู้ใช้เคย Login แล้ว อาจจะโหลด iframe ได้เลย
-        // แต่ส่วนใหญ่ Google จะบล็อกหน้า Login ใน iframe เสมอ
+        // กรณีต้องการให้หน้าเว็บจำสถานะการกด
+        window.onload = function() {
+            // คุณสามารถเพิ่ม Logic ตรวจสอบ Session ที่นี่ได้ในอนาคต
+        };
     </script>
 </body>
 </html>
