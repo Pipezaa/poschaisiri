@@ -142,21 +142,29 @@
         </div>
     </div>
 
-    <iframe 
-        id="appFrame"
-        src="https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec" 
-        allow="camera; microphone; display-capture; clipboard-read; clipboard-write;"
-        allowfullscreen>
-    </iframe>
+    <!-- iframe ที่จะใช้ฝัง App Script ของเรา -->
+    <iframe id="app-iframe" src="" allow="camera; microphone; display-capture; clipboard-read; clipboard-write;" allowfullscreen></iframe>
 
     <script>
-        function reloadIframe() {
-            const iframe = document.getElementById('appFrame');
-            const overlay = document.getElementById('login-overlay');
-            iframe.src = iframe.src; 
-            overlay.style.display = 'none';
-            iframe.style.display = 'block';
-        }
+        // URL ของ App Script ที่ได้จากการ Deploy
+        // !!! สำคัญมาก: ให้เปลี่ยนเป็น URL ของคุณเอง !!!
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec';
+
+        // 1. ดึง iframe element มา
+        const iframe = document.getElementById('app-iframe');
+
+        // 2. ดึงค่าพารามิเตอร์จาก URL ของหน้าหลัก (GitHub Pages)
+        // เช่น ถ้า URL คือ .../poschaisiri?page=po-list&openPoId=PO-123
+        // ตัว `window.location.search` จะได้ค่าเป็น "?page=po-list&openPoId=PO-123"
+        const params = window.location.search;
+
+        // 3. สร้าง URL ใหม่สำหรับ iframe โดยการนำพารามิเตอร์ไปต่อท้าย
+        const iframeSrc = APPS_SCRIPT_URL + params;
+
+        // 4. กำหนด src ให้กับ iframe เพื่อโหลด App Script พร้อมกับพารามิเตอร์
+        iframe.src = iframeSrc;
+
+        console.log('Redirecting to iframe with src:', iframeSrc);
     </script>
 </body>
 </html>
