@@ -34,11 +34,89 @@
             width: 100%;
             height: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #212c3b;
             overflow: hidden; /* ล็อคไม่ให้ดึงหน้าเว็บหลักได้ */
             position: fixed; /* ช่วยแก้บั๊กการเลื่อนบางประการบน iOS */
+            touch-action: none;
         }
 
+        /* หน้าจอโหลดดิ้ง (Splash Screen) ปิดบังจังหวะที่ App Script กำลังโหลด */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #212c3b; /* สีเดียวกับธีม */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 🌟 โลโก้แอปในหน้าโหลดดิ้ง */
+        .loader-logo {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Animation แบบใหม่: จุดกระโดด 3 จุด (Bouncing Dots) */
+        .loader-dots {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .loader-dots div {
+            width: 14px;
+            height: 14px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .loader-dots div:nth-child(1) { animation-delay: 0s; }
+        .loader-dots div:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dots div:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            from { 
+                transform: translateY(0); 
+                opacity: 0.6; 
+            }
+            to { 
+                transform: translateY(-12px); 
+                opacity: 1; 
+                background-color: #64b5f6; /* ไล่สีอ่อนๆ ให้ดูมีมิติเวลาเด้งขึ้น */
+            }
+        }
+
+        /* เพิ่ม Effect ให้ตัวหนังสือกระพริบเบาๆ (Pulse) */
+        .loading-text {
+            font-size: 16px;
+            letter-spacing: 1.5px;
+            color: #e0e0e0;
+            animation: pulseText 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
         /* ขึง iframe ให้เต็มหน้าจอแบบแน่นอน */
         iframe {
             position: absolute;
@@ -53,7 +131,20 @@
     </style>
 </head>
 <body>
-
+    
+    <!-- เพิ่ม Loading Screen แบบใหม่เข้ามา -->
+    <div id="loader">
+        <!-- 🌟 เรียกใช้ไฟล์รูปไอคอนของคุณ ถ้าไม่มีรูปมันจะซ่อนตัวเองอัตโนมัติ -->
+        <img src="icon-192x192.png" alt="POS Logo" class="loader-logo" onerror="this.style.display='none'">
+        
+        <div class="loader-dots">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="loading-text">กำลังโหลดระบบ...</div>
+    </div>
+    
     <!-- iframe ที่จะใช้ฝัง App Script ของเรา -->
     <iframe id="app-iframe" src="" allow="camera; microphone; display-capture; clipboard-read; clipboard-write; geolocation" allowfullscreen></iframe>
 
@@ -81,6 +172,26 @@
             setTimeout(resizeIframe, 100);
         });
 
+
+        // ฟังก์ชันสำหรับซ่อนหน้าจอโหลด
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0'; // ค่อยๆ จางหายไป
+                setTimeout(() => {
+                    loader.style.display = 'none'; // เอาออกจากหน้าจอหลังจาก 0.5 วินาที
+                }, 500);
+            }
+        }
+
+        // 1. เมื่อ iframe โหลด App Script เสร็จสมบูรณ์ ให้ซ่อนหน้าจอ Loading
+        iframe.onload = hideLoader;
+
+        // 🌟 2. ระบบกันค้าง (Fallback Timeout): 
+        // หากเน็ตช้ามากๆ หรือมีปัญหาเกิน 12 วินาที ให้บังคับปิดหน้าจอโหลดไปเลย ผู้ใช้จะได้ไม่ค้าง
+        setTimeout(hideLoader, 12000); 
+
+        iframe.src = iframeSrc;
     </script>
 </body>
 </html>
