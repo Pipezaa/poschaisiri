@@ -19,10 +19,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- รูปแบบแถบสถานะด้านบน -->
     <meta name="apple-mobile-web-app-title" content="POS Chaisiri"> <!-- ชื่อสั้นๆ ที่จะแสดงบนหน้าจอ iPhone -->
     
-    <!-- ใส่รูปภาพ Icon สำหรับ Apple (ต้องเอารูปขนาด 192x192 อัปโหลดลง Github ด้วย) -->
+    <!-- ใส่รูปภาพ Icon สำหรับ Apple -->
     <link rel="apple-touch-icon" href="icon-192x192.png"> 
 
-    <!-- 4. เรียกใช้ Manifest File (ที่คุณสามารถสร้างเองได้) -->
+    <!-- 🌟 เพิ่ม 2 บรรทัดนี้ เพื่อให้มี Icon แสดงบนแท็บ Browser ทั่วไป 🌟 -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="shortcut icon" href="icon-192x192.png">
+
+    <!-- 4. เรียกใช้ Manifest File -->
     <link rel="manifest" href="manifest.json">
 
     <style>
