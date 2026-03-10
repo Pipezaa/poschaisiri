@@ -5,49 +5,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- 1. Viewport ปรับปรุงใหม่ให้รองรับการแสดงผลแบบเต็มจอและรอยบาก (Notch) ของ iPhone -->
+    <!-- Viewport สำหรับ PWA และรองรับ Notch (รอยบาก) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <title>POS System Chaisiri</title>
 
-    <!-- 2. PWA & Mobile Meta Tags ทั่วไป -->
-    <meta name="theme-color" content="#f4f7f6"> <!-- สีของแถบด้านบนเบราว์เซอร์ -->
-    <meta name="mobile-web-app-capable" content="yes"> <!-- ทำให้ Android แอดลงหน้าจอโฮมได้ดีขึ้น -->
-
-    <!-- 3. Apple Specific Meta Tags (สำหรับ iPhone/iPad โดยเฉพาะ) -->
-    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- ซ่อนแถบ URL เมื่อเปิดจาก Home Screen (Standalone Mode) -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- รูปแบบแถบสถานะด้านบน -->
-    <meta name="apple-mobile-web-app-title" content="POS Chaisiri"> <!-- ชื่อสั้นๆ ที่จะแสดงบนหน้าจอ iPhone -->
+    <!-- PWA & Mobile Meta Tags -->
+    <meta name="theme-color" content="#f4f7f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- เปลี่ยนจาก black-translucent เป็น default หรือ black เพื่อไม่ให้หน้าเว็บไหลเข้าไปใต้ Status Bar มากเกินไปจนเพี้ยน -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <meta name="apple-mobile-web-app-title" content="POS Chaisiri">
     
-    <!-- ใส่รูปภาพ Icon สำหรับ Apple -->
+    <!-- Icons -->
     <link rel="apple-touch-icon" href="icon-192x192.png"> 
-
-    <!-- 🌟 เพิ่ม 2 บรรทัดนี้ เพื่อให้มี Icon แสดงบนแท็บ Browser ทั่วไป 🌟 -->
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
     <link rel="shortcut icon" href="icon-192x192.png">
 
-    <!-- 4. เรียกใช้ Manifest File -->
+    <!-- Manifest -->
     <link rel="manifest" href="manifest.json">
 
     <style>
-        body, html {
+        /* รีเซ็ตค่าและล็อคการเลื่อนหน้าจอหลัก */
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
             width: 100%;
+            height: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f6;
-            overflow: hidden; /* ป้องกันไม่ให้หน้าหลักเลื่อนได้ ให้เลื่อนได้แค่ใน iframe */
+            overflow: hidden; /* ล็อคไม่ให้ดึงหน้าเว็บหลักได้ */
+            position: fixed; /* ช่วยแก้บั๊กการเลื่อนบางประการบน iOS */
         }
 
+        /* ขึง iframe ให้เต็มหน้าจอแบบแน่นอน */
         iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 100vh;
+            height: 100%; /* จะถูกควบคุมด้วย JavaScript อีกทีเพื่อความชัวร์ */
             border: none;
-            /* รองรับพื้นที่ปลอดภัยของ iPhone (พวกที่มีรอยบากหรือแถบโฮมด้านล่าง) */
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
             box-sizing: border-box;
+            background-color: transparent;
         }
     </style>
 </head>
@@ -57,7 +58,7 @@
     <iframe id="app-iframe" src="" allow="camera; microphone; display-capture; clipboard-read; clipboard-write; geolocation" allowfullscreen></iframe>
 
     <script>
-        // URL ของ App Script ที่ได้จากการ Deploy
+        // URL ของ App Script
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec';
 
         const iframe = document.getElementById('app-iframe');
@@ -65,7 +66,21 @@
         const iframeSrc = APPS_SCRIPT_URL + params;
         iframe.src = iframeSrc;
 
-        console.log('Redirecting to iframe with src:', iframeSrc);
+        // ฟังก์ชันสำคัญ: ปรับความสูงของ iframe ให้เท่ากับพื้นที่ที่มองเห็นได้จริงๆ (แก้ปัญหาโดนบัง/แถบล่างหาย)
+        function resizeIframe() {
+            iframe.style.height = window.innerHeight + 'px';
+        }
+
+        // สั่งให้ทำงานตอนเปิดเว็บครั้งแรก
+        resizeIframe();
+
+        // สั่งให้ทำงานทุกครั้งที่มีการหมุนจอ หรือซ่อน/โชว์ Address bar
+        window.addEventListener('resize', resizeIframe);
+        // สำหรับ iOS ป้องกันบั๊กตอนสลับแอป
+        window.addEventListener('orientationchange', function() {
+            setTimeout(resizeIframe, 100);
+        });
+
     </script>
 </body>
 </html>
