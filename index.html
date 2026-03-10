@@ -192,6 +192,20 @@
         setTimeout(hideLoader, 12000); 
 
         iframe.src = iframeSrc;
+
+        // 🌟 3. ระบบ Service Worker สำหรับ Cache ไฟล์หน้าเว็บ (ทำให้เปิดแอปไวขึ้น)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('Service Worker registration failed: ', err);
+                    });
+            });
+        }
+        
     </script>
 </body>
 </html>
