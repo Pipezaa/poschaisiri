@@ -119,7 +119,7 @@
         
         /* ขึง iframe ให้เต็มหน้าจอแบบแน่นอน */
         iframe {
-            position: absolute;
+            /* position: absolute; */
             top: 0;
             left: 0;
             width: 100%;
@@ -158,19 +158,19 @@
         iframe.src = iframeSrc;
 
         // ฟังก์ชันสำคัญ: ปรับความสูงของ iframe ให้เท่ากับพื้นที่ที่มองเห็นได้จริงๆ (แก้ปัญหาโดนบัง/แถบล่างหาย)
-        function resizeIframe() {
+        /* function resizeIframe() {
             iframe.style.height = window.innerHeight + 'px';
-        }
+        } */
 
         // สั่งให้ทำงานตอนเปิดเว็บครั้งแรก
-        resizeIframe();
+        /* resizeIframe(); */
 
         // สั่งให้ทำงานทุกครั้งที่มีการหมุนจอ หรือซ่อน/โชว์ Address bar
-        window.addEventListener('resize', resizeIframe);
+        /* window.addEventListener('resize', resizeIframe);
         // สำหรับ iOS ป้องกันบั๊กตอนสลับแอป
         window.addEventListener('orientationchange', function() {
             setTimeout(resizeIframe, 100);
-        });
+        }); */
 
 
         // ฟังก์ชันสำหรับซ่อนหน้าจอโหลด
