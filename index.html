@@ -3,27 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-    <title>POS System Chaisiri</title>
-
-    <!-- PWA & Mobile Meta Tags -->
-    <meta name="theme-color" content="#212c3b">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
-    <meta name="apple-mobile-web-app-title" content="POS Chaisiri">
+    <title>PWA Fullscreen</title>
     
-    <!-- Icons -->
-    <link rel="apple-touch-icon" href="icon-192x192.png"> 
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
-    <link rel="shortcut icon" href="icon-192x192.png">
-
-    <!-- Manifest -->
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MyPWA">
+    
     <link rel="manifest" href="manifest.json">
-
+    
     <style>
-        /* รีเซ็ตค่าและล็อคการเลื่อนหน้าจอหลัก */
-        /* 1. Reset & Base Styles */
+        :root {
+            --primary-color: #007AFF;
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -33,155 +28,150 @@
 
         html, body {
             height: 100%;
-            width: 100%;          
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #212c3b;
-            overflow: hidden; /* ล็อคไม่ให้ดึงหน้าเว็บหลักได้ */
-            touch-action: none;
         }
 
-        /* หน้าจอโหลดดิ้ง (Splash Screen) ปิดบังจังหวะที่ App Script กำลังโหลด */
-        #loader {
-            position: absolute;
-            inset: 0;
-            background-color: #212c3b; /* สีเดียวกับธีม */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            width: 100%;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        main {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            color: white;
-            transition: opacity 0.5s ease;
+            padding: 20px;
+            text-align: center;
         }
 
-        /* โลโก้แอปในหน้าโหลดดิ้ง */
-        .loader-logo {
-            width: 90px;
-            height: 90px;
-            margin-bottom: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            animation: pulseLogo 2s infinite ease-in-out;
-        }
-
-        @keyframes pulseLogo {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* Animation แบบใหม่: จุดกระโดด 3 จุด (Bouncing Dots) */
-        .loader-dots {
+        nav {
+            height: 60px;
             display: flex;
-            gap: 8px;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-item {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nav-item.active { color: var(--primary-color); }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 24px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 20px;
         }
 
-        .loader-dots div {
-            width: 14px;
-            height: 14px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            animation: bounce 0.6s infinite alternate;
-        }
-
-        .loader-dots div:nth-child(1) { animation-delay: 0s; }
-        .loader-dots div:nth-child(2) { animation-delay: 0.2s; }
-        .loader-dots div:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            from { transform: translateY(0); opacity: 0.6; }
-            to { transform: translateY(-12px); opacity: 1; background-color: #64b5f6; }
-        }
-
-        /* เพิ่ม Effect ให้ตัวหนังสือกระพริบเบาๆ (Pulse) */
-        .loading-text {
-            font-size: 16px;
-            letter-spacing: 1.5px;
-            color: #e0e0e0;
-            animation: pulseText 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        
-        /* ขึง iframe ให้เต็มหน้าจอแบบแน่นอน */
-        iframe {
-            display: flex;
-            flex-direction: column;
-            height: 100dvh; /* Use Dynamic Viewport Height */
-            width: 100%;
+        .btn {
+            background: var(--primary-color);
+            color: white;
             border: none;
-            
-            /* ใช้ค่า env() เพื่อเว้นระยะจากขอบจอ iPhone */
-            /* padding-top: env(safe-area-inset-top); */
-            /* padding-bottom: env(safe-area-inset-bottom); */
-            /* padding-left: env(safe-area-inset-left); */
-            /* padding-right: env(safe-area-inset-right); */
-            
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        /* คลาสสำหรับซ่อนปุ่มเมื่อติดตั้งแล้ว */
+        .hidden { display: none; }
+
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
         }
     </style>
 </head>
-<body>
-    
-    <!-- เพิ่ม Loading Screen แบบใหม่เข้ามา -->
-    <div id="loader">
-        <img src="icon-192x192.png" alt="POS Logo" class="loader-logo" onerror="this.style.display='none'">
-        <div class="loader-dots">
-            <div></div><div></div><div></div>
-        </div>
-        <div class="loading-text">กำลังโหลดระบบ...</div>
+<body class="no-select">
+
+    <div class="app-container">
+        <header>
+            <strong id="status-text">PWA Experience</strong>
+        </header>
+
+        <main>
+            <div class="card">
+                <h1 id="welcome-msg">ยินดีต้อนรับ</h1>
+                <p>สัมผัสประสบการณ์ใช้งานแบบเต็มหน้าจอไร้ขอบบน iPhone ของคุณ</p>
+            </div>
+            
+            <!-- ปุ่มนี้จะถูกซ่อนถ้าเปิดผ่าน Standalone Mode -->
+            <div id="install-area">
+                <button class="btn" onclick="installApp()">แตะเพื่อติดตั้งบน iPhone</button>
+                <p style="margin-top: 15px; font-size: 13px;">(Share > Add to Home Screen)</p>
+            </div>
+        </main>
+
+        <nav>
+            <a href="#" class="nav-item active"><span>🏠</span><span>หน้าหลัก</span></a>
+            <a href="#" class="nav-item"><span>👤</span><span>โปรไฟล์</span></a>
+            <a href="#" class="nav-item"><span>⚙️</span><span>ตั้งค่า</span></a>
+        </nav>
     </div>
-    
-    <!-- iframe ที่จะใช้ฝัง App Script ของเรา -->
-    <iframe id="app-iframe" src="" allow="camera; microphone; display-capture; clipboard-read; clipboard-write; geolocation" allowfullscreen></iframe>
 
     <script>
-        // URL ของ App Script
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuAoteT9I7knF_PwtVNmlwKM5v0ultveceBmgSLikbqge1VWrWhALllbJP-U9Bs0yJZg/exec';
+        // ฟังก์ชันตรวจสอบสถานะ Standalone
+        function checkStandalone() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            // ตรวจสอบ standalone บน iOS หรือ display-mode บน Browser ทั่วไป
+            const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
-        const iframe = document.getElementById('app-iframe');
-        const params = window.location.search;
-        const iframeSrc = APPS_SCRIPT_URL + params;
-        iframe.src = iframeSrc;
-
-        // ฟังก์ชันสำคัญ: ปรับความสูงของ iframe ให้เท่ากับพื้นที่ที่มองเห็นได้จริงๆ 
-        function resizeIframe() {
-            iframe.style.height = window.innerHeight + 'px';
-        }
-
-        // สั่งให้ทำงานตอนเปิดเว็บครั้งแรก
-        resizeIframe();
-        window.addEventListener('resize', resizeIframe);
-        window.addEventListener('orientationchange', function() {
-            setTimeout(resizeIframe, 100);
-        });
-
-        // ฟังก์ชันสำหรับซ่อนหน้าจอโหลด
-        function hideLoader() {
-            const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0'; 
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            if (isStandalone) {
+                // ถ้าอยู่ในโหมดแอปแล้ว
+                document.getElementById('install-area').classList.add('hidden');
+                document.getElementById('status-text').innerText = 'Standalone Mode';
+                document.getElementById('welcome-msg').innerText = 'คุณกำลังใช้งานผ่านแอป';
             }
         }
 
-        // 1. เมื่อ iframe โหลด App Script เสร็จสมบูรณ์ ให้ซ่อนหน้าจอ Loading
-        iframe.onload = hideLoader;
-
-        // 2. ระบบกันค้าง (Fallback Timeout)
-        setTimeout(hideLoader, 12000); 
-
-        // 3. ระบบ Service Worker สำหรับ Cache ไฟล์หน้าเว็บ (ทำให้เปิดแอปไวขึ้น)
+        // Service Worker Setup
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => { console.log('Service Worker registered successfully'); })
-                    .catch(err => { console.log('Service Worker registration failed: ', err); });
+                const swCode = `
+                    self.addEventListener('install', (e) => self.skipWaiting());
+                    self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob));
             });
         }
+
+        function installApp() {
+            alert('วิธีติดตั้ง:\n1. แตะปุ่ม "แชร์" ด้านล่างหน้าจอ\n2. เลือก "เพิ่มไปยังหน้าจอโฮม"');
+        }
+
+        // รันการตรวจสอบเมื่อโหลดหน้าเว็บ
+        window.onload = checkStandalone;
     </script>
 </body>
 </html>
